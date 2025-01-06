@@ -23,11 +23,12 @@
           <th scope="col">Humidity (in %)</th>
           <th scope="col">Pulse Rate (in BPM)</th>
           <th scope="col">Oxygen Level (in %)</th>
-          <th scope="col">Date</th>
           <th scope="col">Time</th>
+          <th scope="col">Date</th>
         </tr>
       </thead>
-      <tbody>
+
+      <tbody id="data-table-body">
         <?php
         require("config.php");
         $sr = 1;
@@ -43,7 +44,7 @@
             <td><?php echo $pr['oxy_lvl']; ?></td>
             <td><?php echo $pr['time']; ?></td>
             <td><?php echo $pr['date']; ?></td>
-            <td><a href="delete.php?key=<?php echo $pr['hashid']; ?>" class="btn btn-sm btn-danger">Delete</a></td>
+            <td><a href="delete1.php?key=<?php echo $pr['hashid']; ?>" class="btn btn-sm btn-danger">Delete</a></td>
           </tr>
         <?php } ?>
       </tbody>
@@ -58,31 +59,26 @@
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
 
-  <?php
+  <script>
+    $(document).ready(function () {
+      function loadTableData() {
+        $.ajax({
+          url: "get_data.php", // The file that will fetch and return the data
+          type: "GET",
+          success: function (response) {
+            $('#data-table-body').html(response); // Inject the data into the table body
+          }
+        });
+      }
 
-  // Send an SMS using Twilio's REST API and PHP
-  
-  // Required if your environment does not handle autoloading
-  require '"C:\xampp\htdocs\Sensor-ESP8266-PHP-API-main\twilio-php-main\src\Twilio\autoload.php"';
+      loadTableData(); // Call the function on page load to populate the table
 
-  // Your Account SID and Auth Token from console.twilio.com
-  $sid = "ACef1ce576996f6bf4e9141a5f2eb45bdd";
-  $token = "01a818a38c41b22b8734ef7aa2b78f4c";
-  $client = new Twilio\Rest\Client($sid, $token);
+      // Optionally, you can refresh the data at regular intervals (e.g., every 10 seconds)
+      setInterval(loadTableData, 10000); // Reload data every 10 seconds (10000 ms)
+    });
+  </script>
 
-  // Use the Client to make requests to the Twilio REST API
-  $client->messages->create(
-    // The number you'd like to send the message to
-    '+919574456782',
-    [
-      // A Twilio phone number you purchased at https://console.twilio.com
-      'from' => '+12187576648',
-      // The body of the text message you'd like to send
-      'body' => "Hey Jenny! Good luck on the bar exam!"
-    ]
-  );
 
-  ?>
 </body>
 
 </html>
